@@ -25,8 +25,12 @@ from apache_beam.metrics import Metrics
 from magenta.models.music_vae import TrainedModel
 import note_seq
 
-from .. import config
-from ../utils/ import song_utils
+# from .. import config
+# from ../utils/ import song_utils
+
+# Invoke as: `python -m scripts.generate_song_data_beam`
+import config
+from utils import song_utils
 
 FLAGS = flags.FLAGS
 
@@ -103,7 +107,7 @@ def main(argv):
       FLAGS.pipeline_options.split(','))
 
   with beam.Pipeline(options=pipeline_options) as p:
-    p |= 'tfrecord_list' >> beam.Create(FLAGS.input)
+    p |= 'tfrecord_list' >> beam.Create([FLAGS.input])
     p |= 'read_tfrecord' >> beam.io.tfrecordio.ReadAllFromTFRecord(
         coder=beam.coders.ProtoCoder(note_seq.NoteSequence))
     p |= 'shuffle_input' >> beam.Reshuffle()
