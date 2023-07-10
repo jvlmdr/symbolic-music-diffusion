@@ -48,6 +48,7 @@ flags.DEFINE_enum('mode', 'melody', ['melody', 'multitrack'],
                   'Data generation mode.')
 flags.DEFINE_string('input', None, 'Path to tfrecord files.')
 flags.DEFINE_string('output', None, 'Output path.')
+flags.DEFINE_integer('output_shards', 1, 'Number of output shards.')
 
 
 class EncodeSong(beam.DoFn):
@@ -113,7 +114,7 @@ def main(argv):
     p |= 'shuffle_input' >> beam.Reshuffle()
     p |= 'encode_song' >> beam.ParDo(EncodeSong())
     p |= 'shuffle_output' >> beam.Reshuffle()
-    p |= 'write' >> beam.io.WriteToTFRecord(FLAGS.output)
+    p |= 'write' >> beam.io.WriteToTFRecord(FLAGS.output, num_shards=FLAGS.output_shards)
 
 
 if __name__ == '__main__':
